@@ -58,8 +58,8 @@ class MPCController:
 
     def feedforward(self, x0):
         u_feedforward, cost = self.condensed_program.solve(x0)
-        if any(np.isnan(u_feedforward).flatten()):
-            print('Unfeasible initial condition x_0 = ' + str(x0.tolist()))
+        # if any(np.isnan(u_feedforward).flatten()):
+        #     print('Unfeasible initial condition x_0 = ' + str(x0.tolist()))
         return u_feedforward, cost
 
     def feedback(self, x0):
@@ -83,7 +83,7 @@ class MPCExplicitController:
             cost = .5*x0.T.dot(cr_x0.V_quadratic).dot(x0) + cr_x0.V_linear.dot(x0) + cr_x0.V_offset
             cost = cost[0,0]
         else:
-            print('Unfeasible initial condition x_0 = ' + str(x0.tolist()))
+            # print('Unfeasible initial condition x_0 = ' + str(x0.tolist()))
             u_feedforward = np.full((self.mpqp.G.shape[1], 1), np.nan)
             cost = np.nan
         return u_feedforward, cost
@@ -244,7 +244,7 @@ class MPCHybridController:
                 model.addConstr(phi[self.N,i] >= self.P[i,:].dot(x_np[self.N])[0])
                 model.addConstr(phi[self.N,i] >= - self.P[i,:].dot(x_np[self.N])[0])
 
-       # quadratic objective 
+       # quadratic objective
         elif self.objective_norm == 'two':
             V = 0.
             for k in range(self.N):
@@ -288,7 +288,7 @@ class MPCHybridController:
                     for j in range(self.sys.n_x):
                         model.addConstr(z[k,i,j] <= expr_big_M[j,0])
                         model.addConstr(z[k,i,j] >= expr_small_m[j,0])
-            
+
             # relaxation of the dynamics, part 2
             for k in range(self.N):
                 for i in range(self.sys.n_sys):
@@ -511,7 +511,7 @@ def suppress_stdout():
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         sys.stdout = devnull
-        try:  
+        try:
             yield
         finally:
             sys.stdout = old_stdout
