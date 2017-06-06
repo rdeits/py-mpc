@@ -64,7 +64,7 @@ class Polytope:
         self.normalize()
         self.check_emptiness()
         if self.empty:
-            return
+            return self
         self.check_boundedness()
         if not(self.bounded):
             raise ValueError('Unbounded polyhedron: only polytopes allowed')
@@ -482,7 +482,7 @@ class Polytope:
     #     # find first 2 vertices of the projection minimizing and maximizing in the first direction
     #     growth_direction = np.zeros((self.n_variables, 1))
     #     growth_direction[projection_dimensions[0],0] = 1.
-        
+
     #     v0 = linear_program(-growth_direction, self.lhs_min, self.rhs_min)[0]
     #     v1 = linear_program(growth_direction, self.lhs_min, self.rhs_min)[0]
     #     v_list = [v0[projection_dimensions], v1[projection_dimensions]]
@@ -500,7 +500,7 @@ class Polytope:
     #         vi = linear_program(growth_direction, self.lhs_min, self.rhs_min)[0]
     #         vi = vi[projection_dimensions]
     #         if any([np.linalg.norm(vi - v) < tol for v in v_list]):
-                
+
     #             vi = linear_program(-growth_direction, self.lhs_min, self.rhs_min)[0]
     #             vi = vi[projection_dimensions]
     #         v_list.append(vi)
