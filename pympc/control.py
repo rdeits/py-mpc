@@ -1065,15 +1065,18 @@ def constraint_condenser(sys, X_N, switching_sequence):
     W = rhs - lhs_x.dot(c_bar)
     E = - lhs_x.dot(A_bar)
     p = Polytope(np.hstack((G, -E)), W)
-    p.assemble()
-    if not p.empty:
-        G = p.lhs_min[:,:sys.n_u*N]
-        E = - p.lhs_min[:,sys.n_u*N:]
-        W = p.rhs_min
-    else:
-        G = None
-        W = None
-        E = None
+    # p.assemble()
+    # if not p.empty:
+    #     G = p.lhs_min[:,:sys.n_u*N]
+    #     E = - p.lhs_min[:,sys.n_u*N:]
+    #     W = p.rhs_min
+    # else:
+    #     G = None
+    #     W = None
+    #     E = None
+    G = p.A[:, :sys.n_u*N]
+    E = -p.A[:, sys.n_u*N:]
+    W = p.b
     return G, W, E
 
 
