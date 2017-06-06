@@ -214,17 +214,17 @@ class MPCHybridController:
         if model.status != grb.GRB.Status.OPTIMAL:
             print('Unfeasible initial condition x_0 = ' + str(x0.tolist()))
             u_feedforward = [np.full((self.sys.n_u,1), np.nan) for k in range(self.N)]
-            # x_trajectory = [np.full((self.sys.n_x,1), np.nan) for k in range(self.N+1)]
+            x_trajectory = [np.full((self.sys.n_x,1), np.nan) for k in range(self.N+1)]
             cost = np.nan
             switching_sequence = [np.nan]*self.N
         else:
             cost = model.objVal
             u_feedforward = [np.array([[model.getAttr('x', u)[k,i]] for i in range(self.sys.n_u)]) for k in range(self.N)]
-            # x_trajectory = [np.array([[model.getAttr('x', x)[k,i]] for i in range(self.sys.n_x)]) for k in range(self.N+1)]
+            x_trajectory = [np.array([[model.getAttr('x', x)[k,i]] for i in range(self.sys.n_x)]) for k in range(self.N+1)]
             # u_feedforward = np.array([[model.getAttr('x', u)[k,i] for i in range(self.sys.n_u)] for k in range(self.N)])
             d_star = [np.array([[model.getAttr('x', d)[k,i]] for i in range(self.sys.n_sys)]) for k in range(self.N)]
             switching_sequence = [np.where(np.isclose(d, 1.))[0][0] for d in d_star]
-        return u_feedforward, cost, tuple(switching_sequence)#, x_trajectory
+        return u_feedforward, x_trajectory, cost, tuple(switching_sequence)#, x_trajectory
 
     def mip_objective(self, model, x_np, u_np):
 
@@ -252,7 +252,7 @@ class MPCHybridController:
                 model.addConstr(phi[self.N,i] >= self.P[i,:].dot(x_np[self.N])[0])
                 model.addConstr(phi[self.N,i] >= - self.P[i,:].dot(x_np[self.N])[0])
 
-       # quadratic objective 
+       # quadratic objective
         elif self.objective_norm == 'two':
             V = 0.
             for k in range(self.N):
@@ -294,7 +294,7 @@ class MPCHybridController:
                     for j in range(self.sys.n_x):
                         model.addConstr(z[k,i,j] <= expr_M[j,0])
                         model.addConstr(z[k,i,j] >= expr_m[j,0])
-            
+
             # relaxation of the dynamics, part 2
             for k in range(self.N):
                 for i in range(self.sys.n_sys):
@@ -635,7 +635,7 @@ class MPCHybridController:
 #         return u_feedback
 
 
-            
+
 class HybridPolicyLibrary:
     """
     library (dict)
@@ -715,7 +715,7 @@ class HybridPolicyLibrary:
             A, b = self.upper_bound_from_hull(ss_values['upper_bound']['convex_hull'])
             ss_values['upper_bound']['A'] = A
             ss_values['upper_bound']['b'] = b
-            
+
         return
 
     def bound_optimal_value_functions(self, n_samples):
@@ -989,7 +989,7 @@ def suppress_stdout():
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         sys.stdout = devnull
-        try:  
+        try:
             yield
         finally:
             sys.stdout = old_stdout
