@@ -919,8 +919,7 @@ class parametric_qp:
             self._feasible_set = augmented_polytope.orthogonal_projection(range(self.C_x.shape[1]))
         return self._feasible_set
 
-    def get_cost_sensitivity(self, x_list, active_set, tol = 1.e-6):
-
+    def get_u_sensitivity(self, active_set):
         self.remove_linear_terms()
 
         # clean active set
@@ -944,6 +943,10 @@ class parametric_qp:
         # primal original variables explicit solution
         u_offset = z_offset - self.H_inv.dot(self.F_u)
         u_linear = z_linear - self.H_inv.dot(self.F_xu.T)
+        return u_offset, u_linear
+
+    def get_cost_sensitivity(self, x_list, active_set):
+        u_offset, u_linear = self.get_u_sensitivity(active_set)
 
         # optimal value function explicit solution: V_star = .5 x' V_quadratic x + V_linear x + V_offset
         V_quadratic = u_linear.T.dot(self.F_uu).dot(u_linear) + self.F_xx + 2.*self.F_xu.dot(u_linear)
