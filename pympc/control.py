@@ -239,7 +239,7 @@ class MPCHybridController:
         # set parameters
         time_limit = 60.
         model.setParam('OutputFlag', False)
-        model.setParam('TimeLimit', time_limit)
+        # model.setParam('TimeLimit', time_limit)
         model.setParam(grb.GRB.Param.OptimalityTol, 1.e-9)
         model.setParam(grb.GRB.Param.FeasibilityTol, 1.e-9)
         model.setParam(grb.GRB.Param.IntFeasTol, 1.e-9)
